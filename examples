@@ -1,0 +1,15 @@
+# Query last day of cloudtrail logs on specific region to search for UnauthorizedOperation or AccessDenied errorcodes.
+
+SELECT useridentity.arn,
+         awsregion,
+         eventsource,
+         eventtime,
+         eventname,
+         errorcode,
+         resources
+FROM cloudtrail_logs
+WHERE awsregion='us-east-1'
+        AND useridentity.arn != ''
+        AND (errorcode LIKE '%UnauthorizedOperation'
+        OR errorcode LIKE 'AccessDenied%')
+        AND from_iso8601_timestamp(eventtime) > date_add('day', -1, now()) LIMIT 100;
